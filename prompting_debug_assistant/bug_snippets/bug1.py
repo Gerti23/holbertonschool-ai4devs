@@ -1,9 +1,9 @@
 """
-## Bug 1 - bug1.py
-Off-by-one error in list slicing
-This function should return the last n items of a list.
+## Bug 1 – bug1.py
+**Intended Behavior**: Return exactly the last n items of a list (e.g., get_last_n_items([1,2,3,4,5], 2) → [4, 5]).  
+**Issue Type**: Off-by-one error.  
+**Notes**: The function incorrectly returns n+1 items when n < len(items) due to the wrong start index (`len(items) - n - 1`). Should use `len(items) - n` as the start index to return the correct number of items.
 """
-
 def get_last_n_items(items, n):
     """
     Returns the last n items from a list.
@@ -22,7 +22,7 @@ def get_last_n_items(items, n):
         return items
     
     # Bug: Off-by-one error in the slicing
-    start_index = len(items) - n - 1
+        start_index = len(items) - n
     return items[start_index:]
 
 

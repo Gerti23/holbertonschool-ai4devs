@@ -1,22 +1,20 @@
 /**
  * ## Bug 2 – bug2.js
- * This function should remove duplicate numbers from an array
- * and return them in ascending order.
+ * Logic error in duplicate removal and sorting
+ * This function should remove duplicates from an array of numbers and return a sorted array of unique values. 
+ * The original code had a logic error where it added duplicates to the result array and then sorted it as strings, leading to incorrect results.
  */
 
 function removeDuplicates(numbers) {
-    // Bug: Logical error - comparison should check if item is NOT in result
+    // Fixed: Only add if not already present
     let result = [];
-    
     for (let i = 0; i < numbers.length; i++) {
-        if (result.includes(numbers[i])) {
+        if (!result.includes(numbers[i])) {
             result.push(numbers[i]);
         }
     }
-    
     // Sort numerically
     result.sort((a, b) => a - b);
-    
     return result;
 }
 

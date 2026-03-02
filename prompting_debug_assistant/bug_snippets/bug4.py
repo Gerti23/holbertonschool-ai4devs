@@ -1,18 +1,15 @@
 """
-## Bug 4 - bug4.py
-Misuse of data types
-This function should calculate the sum of all values in a dictionary
-where the values are numbers stored as strings.
+## Bug 4 – bug4.py
+**Intended Behavior**: Calculate the sum of all dictionary values, where values are numeric strings (e.g., {"apples": "10", ...} → 80).  
+**Issue Type**: Data type misuse.  
+**Notes**: The total is initialized as a string and concatenates values instead of adding them as integers. Should use integer addition (`total = 0; total += int(value)`).
 """
 
 def sum_string_numbers(data):
-    total = "0"  # Bug: Using string instead of int
-    
+    total = 0  # Fixed: Use integer for total
     for key, value in data.items():
         if value.isdigit():
-            # Bug: Concatenating strings instead of adding numbers
-            total = total + value
-    
+            total += int(value)
     return total
 inventory = {
     "apples": "10",

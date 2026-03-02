@@ -1,8 +1,8 @@
 /**
- * ## Bug 3 – bug3.java 
- * Runtime exception - NullPointerException
- * This class should calculate the average length of strings in a list,
- * ignoring null values.
+ ## Bug 3 – bug3.java
+**Intended Behavior**: Calculate the average length of all non-null strings in a list, skipping any null values.  
+**Issue Type**: Runtime exception (NullPointerException).  
+**Notes**: The function does not check for null before calling `str.length()`, causing a crash if a null is present. Should skip nulls to avoid the exception.
  */
 
 import java.util.ArrayList;
@@ -22,7 +22,8 @@ public class bug3 {
         
         for (String str : strings) {
             // Bug: No null check before calling length()
-            totalLength += str.length();
+                if (str == null) continue;
+                totalLength += str.length();
             count++;
         }
         

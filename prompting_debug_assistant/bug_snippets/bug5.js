@@ -1,8 +1,8 @@
 /**
- * ## Bug 5 – bug5.js
- * Syntax error with async/await
- * This function should fetch user data from an API and return 
- * the user's name in uppercase.
+ ## Bug 5 – bug5.js
+**Intended Behavior**: Fetch user data from an API and return the user's name in uppercase using async/await.  
+**Issue Type**: Syntax error (async/await misuse).  
+**Notes**: The function uses `await` but is not declared as `async`. Should add the `async` keyword to the function declaration.
  */
 
 // Simulated API call
