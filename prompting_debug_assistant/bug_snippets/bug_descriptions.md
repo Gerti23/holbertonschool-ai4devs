@@ -7,8 +7,8 @@
 
 ## Bug 2 – bug2.js
 **Intended Behavior**: Remove duplicate numbers from an array and return them in ascending order.  
-**Issue Type**: Logical error.  
-**Notes**: The function adds numbers to the result only if already present. Should add if not present (`!result.includes(numbers[i])`).
+**Issue Type**: Logical error (incorrect condition in implementation).  
+**Notes**: The function pushes a number only when it already exists in `result`, so new unique values never get added. The condition should be inverted (add when NOT present: `!result.includes(numbers[i])`).
 
 ## Bug 3 – bug3.java
 **Intended Behavior**: Calculate the average length of non-null strings in a list, ignoring nulls.  
@@ -17,8 +17,8 @@
 
 ## Bug 4 – bug4.py
 **Intended Behavior**: Calculate the sum of all values in a dictionary where the values are numbers stored as strings.  
-**Issue Type**: Data type misuse.  
-**Notes**: The total is a string and concatenates values. Should use integer addition (`total = 0; total += int(value)`).
+**Issue Type**: Data type misuse (numeric handling error).  
+**Notes**: Values are numeric strings, but `total` is initialized as a string and `+=` performs concatenation (e.g. "10" + "5" -> "105"). `total` should be numeric (e.g. `0`) and each `value` should be converted (e.g. `int(value)`) before adding.
 
 ## Bug 5 – bug5.js
 **Intended Behavior**: Fetch user data from an API and return the user's name in uppercase using async/await.  
@@ -28,4 +28,4 @@
 ## Bug 6 – bug6.py
 **Intended Behavior**: Find the first pair of consecutive numbers in a list that sum to a target value.  
 **Issue Type**: Logic error (infinite loop).  
-**Notes**: The index is only incremented on match, causing infinite loop if no match. Should increment index every iteration.
+**Notes**: The loop never increments the index when there is no match, so `i` stays the same and the `while` condition never changes (infinite loop). Fix by incrementing `i` on every iteration (and only returning when a match is found).
