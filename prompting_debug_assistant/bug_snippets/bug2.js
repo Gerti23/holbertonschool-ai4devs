@@ -1,5 +1,5 @@
 /**
- * Bug 2: Logical error with array filtering
+ * ## Bug 2 – bug2.js
  * This function should remove duplicate numbers from an array
  * and return them in ascending order.
  */

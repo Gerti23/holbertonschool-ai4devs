@@ -1,5 +1,5 @@
 /**
- * Bug 3: Runtime exception - NullPointerException
+ * ## Bug 3 – bug3.java Runtime exception - NullPointerException
  * This class should calculate the average length of strings in a list,
  * ignoring null values.
  */

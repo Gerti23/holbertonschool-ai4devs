@@ -1,5 +1,6 @@
 """
-Bug 1: Off-by-one error in list slicing
+## Bug 1 - bug1.py
+Off-by-one error in list slicing
 This function should return the last n items of a list.
 """
 
