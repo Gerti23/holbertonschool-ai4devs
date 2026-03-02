@@ -1,5 +1,6 @@
 """
-Bug 4: Misuse of data types
+## Bug 4 - bug4.py
+Misuse of data types
 This function should calculate the sum of all values in a dictionary
 where the values are numbers stored as strings.
 """

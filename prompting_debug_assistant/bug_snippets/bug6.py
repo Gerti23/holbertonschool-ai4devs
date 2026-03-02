@@ -1,5 +1,6 @@
 """
-Bug 6: Loop logic issue with infinite loop potential
+## Bug 6 - bug6.py
+Loop logic issue with infinite loop potential
 This function should find the first pair of consecutive numbers 
 in a list that sum to a target value.
 """
