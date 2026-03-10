@@ -81,12 +81,12 @@ As a spec author, I want to export the spec to Markdown so that I can share it i
 **Priority**: MVP
 
 ### User Story 9
-As a project lead, I want to create a shareable spec link so that stakeholders can view the latest version without editing it.
+As a spec author, I want to create a shareable read-only link so that stakeholders can view the latest approved version without editing it.
 
 **Acceptance Criteria**:
-- User can generate a read-only link for a spec.
-- Viewers can read the spec and acceptance criteria but cannot edit.
-- Link can be disabled by the spec owner.
+- When the author clicks “Share”, the system generates a read-only link for the current spec version.  
+- Anyone with the link can view the spec content and acceptance criteria but cannot edit any fields.  
+- The author can disable the link, and disabled links show an “access revoked” message.  
 
 **Priority**: Medium
 
@@ -94,8 +94,8 @@ As a project lead, I want to create a shareable spec link so that stakeholders c
 As a spec author, I want the system to flag missing edge cases so that I can reduce implementation surprises.
 
 **Acceptance Criteria**:
-- System detects when the edge-cases section is empty and prompts the user.
-- System suggests at least 3 candidate edge cases based on the spec content.
-- User can accept suggestions into the edge-cases section or dismiss them.
+- If the “Edge Cases” section is empty, the system shows a clear prompt to add edge cases before export/review.  
+- The system suggests at least 3 edge cases based on the spec content (inputs, errors, limits).  
+- The user can add a suggestion to the “Edge Cases” section with one click or dismiss it.  
 
 **Priority**: Low
