@@ -1,5 +1,3 @@
-# User Stories
-
 ### User Story 1
 As a spec author, I want to start a new spec from a guided template so that I can capture the required sections without missing anything.
 
@@ -35,7 +33,7 @@ As a spec author, I want to record assumptions and open questions so that unknow
 
 **Acceptance Criteria**:
 - User can add an assumption or question with a status (open/resolved).  
-- Each item can be assigned an owner or noted as “unassigned”.  
+- Each item can be assigned an owner or noted as "unassigned".  
 - Resolved items remain visible but clearly marked.  
 
 **Priority**: High
@@ -65,7 +63,7 @@ As a spec author, I want to link requirements to acceptance criteria so that cov
 
 **Acceptance Criteria**:
 - User can create a link between a requirement and one or more acceptance criteria.  
-- System shows a coverage indicator (e.g., “3/5 requirements have criteria”).  
+- System shows a coverage indicator (e.g., "3/5 requirements have criteria").  
 - System flags requirements with zero linked criteria.  
 
 **Priority**: Medium
@@ -84,9 +82,9 @@ As a spec author, I want to export the spec to Markdown so that I can share it i
 As a spec author, I want to create a shareable read-only link so that stakeholders can view the latest approved version without editing it.
 
 **Acceptance Criteria**:
-- When the author clicks “Share”, the system generates a read-only link for the current spec version.  
+- When the author clicks "Share", the system generates a read-only link for the current spec version.  
 - Anyone with the link can view the spec content and acceptance criteria but cannot edit any fields.  
-- The author can disable the link, and disabled links show an “access revoked” message.  
+- The author can disable the link, and disabled links show an "access revoked" message.  
 
 **Priority**: Medium
 
@@ -94,28 +92,8 @@ As a spec author, I want to create a shareable read-only link so that stakeholde
 As a spec author, I want the system to flag missing edge cases so that I can reduce implementation surprises.
 
 **Acceptance Criteria**:
-- If the “Edge Cases” section is empty, the system shows a clear prompt to add edge cases before export/review.  
+- If the "Edge Cases" section is empty, the system shows a clear prompt to add edge cases before export/review.  
 - The system suggests at least 3 edge cases based on the spec content (inputs, errors, limits).  
-- The user can add a suggestion to the “Edge Cases” section with one click or dismiss it.  
+- The user can add a suggestion to the "Edge Cases" section with one click or dismiss it.  
 
 **Priority**: Low
-
-### User Story 11
-As a spec reviewer, I want to leave section-specific comments so that the author knows exactly what to change.
-
-**Acceptance Criteria**:
-- Reviewer can add a comment attached to a specific section (e.g., Scope, Constraints, Acceptance Criteria).  
-- Each comment is saved with author and timestamp and remains visible until resolved.  
-- The spec author can mark a comment as resolved after updating the spec.  
-
-**Priority**: Medium
-
-### User Story 12
-As a spec author, I want to see which requirements lack acceptance criteria so that I can ensure the spec is fully testable.
-
-**Acceptance Criteria**:
-- System displays a list of requirements that have zero linked acceptance criteria.  
-- System provides a “Generate criteria” action from the uncovered requirements list.  
-- Coverage status updates immediately after criteria are added and linked.  
-
-**Priority**: High
