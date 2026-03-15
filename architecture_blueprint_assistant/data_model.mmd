@@ -1,0 +1,54 @@
+erDiagram
+  CLOSET ||--o{ CLOTHING_ITEM : owns
+  CLOSET ||--o{ OUTFIT : saves
+  OUTFIT ||--o{ OUTFIT_ITEM : contains
+  CLOTHING_ITEM ||--o{ OUTFIT_ITEM : used_in
+  CLOSET ||--o{ PLAN_ENTRY : plans
+  OUTFIT ||--o{ PLAN_ENTRY : scheduled_as
+
+  CLOSET {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+
+  CLOTHING_ITEM {
+    string id PK
+    string closet_id FK
+    string name
+    string category
+    string color
+    string season
+    string status "available|laundry|archived"
+    string image_url
+    datetime created_at
+    datetime updated_at
+  }
+
+  OUTFIT {
+    string id PK
+    string closet_id FK
+    string name
+    string occasion
+    string season
+    int comfort_rating
+    datetime created_at
+    datetime updated_at
+  }
+
+  OUTFIT_ITEM {
+    string id PK
+    string outfit_id FK
+    string clothing_item_id FK
+    string slot "top|bottom|shoes|outerwear|accessory"
+    int sort_order
+  }
+
+  PLAN_ENTRY {
+    string id PK
+    string closet_id FK
+    string outfit_id FK
+    date wear_date
+    string notes
+    datetime created_at
+  }
