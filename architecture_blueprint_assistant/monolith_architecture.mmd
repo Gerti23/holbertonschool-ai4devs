@@ -1,0 +1,18 @@
+graph TD
+  A[Frontend Web App (SmartCloset Lite)] --> B[Backend Monolith API]
+
+  B --> C[Wardrobe Module]
+  B --> D[Outfits Module]
+  B --> E[Planner Module]
+  B --> F[Media/Images Module]
+  B --> G[Suggestions Module (Rule-based)]
+  B --> H[Validation & Error Handling]
+
+  C --> I[(Database)]
+  D --> I
+  E --> I
+  H --> I
+
+  F --> J[(Object Storage for Photos)]
+  B --> K[External Weather API (Optional)]
+  G --> K

@@ -1,0 +1,40 @@
+Plan 6-javor (solo) për SmartCloset Lite (web + Supabase)
+
+Java 1 — Scope + bazat
+
+Mbyllim MVP-në: Wardrobe (CRUD + tags + filters), Outfits (krijo/ruaj), Planner (week view + assign outfit), “in laundry”, “recently worn”.
+Vendosim stack: Frontend (p.sh. React/Vite + Tailwind), Backend (Supabase DB + Storage).
+Skico UI screens (Figma ose thjesht wireframes): Wardrobe, Outfit Builder, Planner, Settings.
+Definition of Done: çdo screen funksionon end-to-end me data reale nga Supabase.
+
+Java 2 — Data model + theme UI
+
+Java 2 — Data model + theme UI
+
+Krijo tabelat në Supabase (minimum): items, outfits, outfit_items, plans (plan = outfit + date).
+Vendos Storage bucket për foto (ose përkohësisht URL).
+Ndërto UI skeleton: layout, navigation, empty states, loading states.
+
+Java 3 — Wardrobe
+
+Implemento Wardrobe CRUD + upload foto + tags.
+Search + filters (category/color/tags/season) me performancë të mirë.
+“Laundry” status + quick actions në card UI.
+
+Java 4 — Outfit Builder
+
+Krijo outfits nga items (ruajtje + edit + duplicate).
+Outfit detail page me “occasion/season notes”.
+Validime të thjeshta (p.sh. outfit pa asnjë item s’ruhet).
+
+Java 5 — Planner
+
+Week view + “assign outfit to date”.
+“Recently worn” hint (p.sh. në 7 ditët e fundit) + warning nëse një item është “in laundry”.
+Export print view (opsionale, nëse del kohë).
+
+Java 6 — Polish + demo-ready
+
+“Fun UX”: drag & drop (opsionale), quick “shuffle outfit”, nice empty states, smooth interactions.
+Seed data për demo, testing manual i flows, rregullim bugs.
+Deploy (Vercel/Netlify) + dokumentim i thjeshtë (si ta përdorësh).

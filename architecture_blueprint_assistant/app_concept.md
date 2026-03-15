@@ -1,22 +1,31 @@
-# Application Concept – SpecForge
+# Application Concept – SmartCloset Lite
 
 ## Application
-AI-assisted specification writer that turns vague prompts into clear, testable technical specs for software projects.
+SmartCloset Lite is a simple web app to manage your closet. Users add their clothes, create outfits, and plan what to wear on different days. The goal is a clean, nice UI with easy features.
 
 ## Core Features
-- Guided spec template (problem, scope, constraints, non-goals, edge cases)
-- Requirement-to-acceptance-criteria generation (Given/When/Then style)
-- Assumptions and open-questions log with status tracking
-- Versioning with change summaries for review cycles
+- Closet items
+	- Add/edit/remove items with a photo and basic details (category, color, season, tags)
+	- Search and filter items
+	- Mark items as available or in laundry
+- Outfits
+	- Combine items into an outfit and save it
+	- Add simple notes (occasion, season)
+- Planner
+	- Pick an outfit for a date
+	- Weekly view
+	- Show a small “recently worn” hint
+- Simple suggestions (optional)
+	- Suggest outfits based on occasion/season
 
-## Users
-- Spec authors (developers/students): want to draft complete specs quickly and reduce ambiguity before coding
-- Spec reviewers (team leads/instructors): want consistent structure and fast review/approval with clear changes
-- QA/testers: want testable acceptance criteria that translate directly into test cases
-- Admins: want to manage access, templates, and workspace settings
+## User Types
+- Users: want to plan outfits faster and reuse clothes better
+- Admins (optional): handle support and moderation if sharing is added
 
 ## Constraints
-- Scale to support large classes/teams and peak usage (e.g., 50K+ active users, bursty review deadlines)
-- Compliance and privacy: GDPR-friendly data handling; avoid storing sensitive secrets in specs
-- Platform support: web-first UI, responsive for mobile; export compatible with GitHub Markdown
-- Reliability: autosave and version history to prevent data loss; audit trail for reviews
+- Web-only and responsive (mobile + desktop)
+- Privacy first: closet is private by default; sharing is opt-in
+- GDPR-friendly: export/delete user data
+- Fast browsing and filtering even with many items
+- Optimize images to reduce storage and loading time
+- Reliable saves (avoid losing edits)
