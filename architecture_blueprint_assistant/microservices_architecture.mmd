@@ -1,0 +1,27 @@
+graph TD
+  A[Frontend Web App] --> G[API Gateway]
+
+  G --> I[Wardrobe Service]
+  G --> J[Outfits Service]
+  G --> K[Planner Service]
+  G --> L[Media Service]
+  G --> M[Suggestions Service]
+  G --> N[Search/Index Service]
+  G --> O[Notifications Service (Optional)]
+  G --> P[Analytics Service (Optional)]
+
+  I --> DB1[(Wardrobe DB)]
+  J --> DB2[(Outfits DB)]
+  K --> DB3[(Planner DB)]
+  L --> S[(Object Storage)]
+  N --> IDX[(Search Index)]
+  M --> W[Weather API (Optional)]
+
+  J --> I
+  K --> J
+  N --> I
+  N --> J
+  O --> L
+  P --> I
+  P --> J
+  P --> K
