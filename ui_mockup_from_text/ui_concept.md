@@ -13,9 +13,6 @@ Help users digitize their clothing collection, plan what to wear, and create out
 - Planner: calendar to schedule outfits, mark items as worn, and review recent wear history
 
 ## Actions
-- Add, edit, and archive wardrobe items; tag and categorize items
-- Create and save outfits; duplicate and modify existing outfits
-- Schedule an outfit on the calendar; swap or mark as worn
-- View recommendations (weather/season-based) and regenerate suggestions
-- Maintain a wishlist/shopping list and mark items as purchased
-- Export wardrobe data (CSV/JSON) and manage privacy options
+- Manage wardrobe items: add/import, edit, tag/categorize, archive, and maintain a wishlist/shopping list
+- Create outfits: combine items, save/modify outfits, and view weather/season-based recommendations
+- Plan and track: schedule outfits on a calendar and mark items/outfits as worn to build wear history
