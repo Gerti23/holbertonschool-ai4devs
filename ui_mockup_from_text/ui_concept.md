@@ -6,7 +6,6 @@ Help users digitize their clothing collection, plan what to wear, and create out
 ## Users
 - Individuals: catalog personal clothes and plan daily outfits
 - Fashion-conscious users: build and save outfits for different occasions
-- Busy professionals/students: reduce decision time with planned looks
 
 ## Core Screens
 - Closet: browse wardrobe items by category (tops, bottoms, shoes, accessories) with search and tags
