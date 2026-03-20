@@ -1,0 +1,841 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Virtual Wardrobe API",
+    "version": "1.0.0",
+    "description": "API for managing wardrobe items, outfits, and outfit planning. Includes JWT authentication, cursor pagination, and consistent error envelopes."
+  },
+  "servers": [
+    {
+      "url": "https://api.virtual-wardrobe.example.com",
+      "description": "Production (example)"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    { "name": "Auth" },
+    { "name": "Users" },
+    { "name": "Items" },
+    { "name": "Outfits" },
+    { "name": "Planner" },
+    { "name": "Wear" }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register a new user",
+        "operationId": "registerUser",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RegisterRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registered successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthTokens" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login and obtain tokens",
+        "operationId": "login",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthTokens" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Refresh access token",
+        "operationId": "refreshToken",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthTokens" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get the current user profile",
+        "operationId": "getMe",
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/items": {
+      "get": {
+        "tags": ["Items"],
+        "summary": "List wardrobe items (paginated)",
+        "operationId": "listItems",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/IncludeArchived" },
+          { "$ref": "#/components/parameters/Category" },
+          { "$ref": "#/components/parameters/Color" },
+          { "$ref": "#/components/parameters/Season" },
+          { "$ref": "#/components/parameters/Tag" },
+          { "$ref": "#/components/parameters/Q" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated items",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaginatedWardrobeItems" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Items"],
+        "summary": "Create a wardrobe item",
+        "operationId": "createItem",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WardrobeItemCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created item",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WardrobeItem" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/items/{itemId}": {
+      "parameters": [{ "$ref": "#/components/parameters/ItemId" }],
+      "get": {
+        "tags": ["Items"],
+        "summary": "Get a wardrobe item by ID",
+        "operationId": "getItem",
+        "responses": {
+          "200": {
+            "description": "Item",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WardrobeItem" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "patch": {
+        "tags": ["Items"],
+        "summary": "Update a wardrobe item",
+        "operationId": "updateItem",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WardrobeItemUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated item",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WardrobeItem" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Items"],
+        "summary": "Archive a wardrobe item",
+        "operationId": "archiveItem",
+        "description": "Archives the item (soft delete). Archived items are excluded from lists unless includeArchived=true.",
+        "responses": {
+          "204": { "description": "Archived" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/outfits": {
+      "get": {
+        "tags": ["Outfits"],
+        "summary": "List outfits (paginated)",
+        "operationId": "listOutfits",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/IncludeArchived" },
+          { "$ref": "#/components/parameters/Occasion" },
+          { "$ref": "#/components/parameters/Q" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated outfits",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaginatedOutfits" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Outfits"],
+        "summary": "Create an outfit",
+        "operationId": "createOutfit",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OutfitCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created outfit",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Outfit" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/outfits/{outfitId}": {
+      "parameters": [{ "$ref": "#/components/parameters/OutfitId" }],
+      "get": {
+        "tags": ["Outfits"],
+        "summary": "Get an outfit by ID",
+        "operationId": "getOutfit",
+        "responses": {
+          "200": {
+            "description": "Outfit",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Outfit" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "patch": {
+        "tags": ["Outfits"],
+        "summary": "Update an outfit",
+        "operationId": "updateOutfit",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OutfitUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated outfit",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Outfit" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Outfits"],
+        "summary": "Archive an outfit",
+        "operationId": "archiveOutfit",
+        "responses": {
+          "204": { "description": "Archived" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/plans": {
+      "get": {
+        "tags": ["Planner"],
+        "summary": "List planner entries for a date range (paginated)",
+        "operationId": "listPlans",
+        "parameters": [
+          { "$ref": "#/components/parameters/StartDate" },
+          { "$ref": "#/components/parameters/EndDate" },
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Cursor" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated plan entries",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaginatedPlanEntries" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Planner"],
+        "summary": "Create or update a planner entry for a date/slot",
+        "operationId": "upsertPlan",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PlanUpsertRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upserted plan entry",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PlanEntry" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/wear": {
+      "post": {
+        "tags": ["Wear"],
+        "summary": "Mark an outfit as worn",
+        "operationId": "markWorn",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WearCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created wear history entry",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WearEntry" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Max number of results to return.",
+        "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "description": "Opaque cursor for the next page.",
+        "schema": { "type": "string", "nullable": true }
+      },
+      "IncludeArchived": {
+        "name": "includeArchived",
+        "in": "query",
+        "description": "Include archived (soft-deleted) records.",
+        "schema": { "type": "boolean", "default": false }
+      },
+      "Q": {
+        "name": "q",
+        "in": "query",
+        "description": "Free-text search query.",
+        "schema": { "type": "string" }
+      },
+      "Category": {
+        "name": "category",
+        "in": "query",
+        "schema": { "$ref": "#/components/schemas/ItemCategory" }
+      },
+      "Color": {
+        "name": "color",
+        "in": "query",
+        "schema": { "type": "string", "description": "Color name or hex code." }
+      },
+      "Season": {
+        "name": "season",
+        "in": "query",
+        "schema": { "$ref": "#/components/schemas/Season" }
+      },
+      "Tag": {
+        "name": "tag",
+        "in": "query",
+        "schema": { "type": "string" }
+      },
+      "Occasion": {
+        "name": "occasion",
+        "in": "query",
+        "schema": { "$ref": "#/components/schemas/Occasion" }
+      },
+      "StartDate": {
+        "name": "startDate",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "format": "date" }
+      },
+      "EndDate": {
+        "name": "endDate",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "format": "date" }
+      },
+      "ItemId": {
+        "name": "itemId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "OutfitId": {
+        "name": "outfitId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Too many requests",
+        "headers": {
+          "Retry-After": {
+            "schema": { "type": "integer" },
+            "description": "Seconds to wait before retrying."
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["code", "message"],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Machine-readable error code.",
+                "example": "VALIDATION_ERROR"
+              },
+              "message": { "type": "string", "example": "One or more fields are invalid." },
+              "details": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Field-level errors or contextual details."
+              },
+              "requestId": {
+                "type": "string",
+                "description": "Correlation ID for support.",
+                "example": "req_01HZX9QJ7W3B8F1X"
+              }
+            }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": ["id", "email", "createdAt"],
+        "properties": {
+          "id": { "type": "string", "example": "usr_123" },
+          "email": { "type": "string", "format": "email", "example": "user@example.com" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "AuthTokens": {
+        "type": "object",
+        "required": ["accessToken", "refreshToken"],
+        "properties": {
+          "accessToken": { "type": "string", "description": "JWT access token." },
+          "refreshToken": { "type": "string", "description": "Refresh token (opaque)." }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password", "minLength": 8 }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password" }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "required": ["refreshToken"],
+        "properties": { "refreshToken": { "type": "string" } }
+      },
+      "ItemCategory": {
+        "type": "string",
+        "enum": ["top", "bottom", "outerwear", "dress", "shoes", "accessory"]
+      },
+      "Season": { "type": "string", "enum": ["spring", "summer", "fall", "winter", "all"] },
+      "Occasion": { "type": "string", "enum": ["casual", "work", "formal", "sport", "event"] },
+      "WardrobeItem": {
+        "type": "object",
+        "required": ["id", "name", "category", "isArchived", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string", "example": "itm_123" },
+          "name": { "type": "string", "minLength": 1, "maxLength": 80, "example": "White Sneakers" },
+          "category": { "$ref": "#/components/schemas/ItemCategory" },
+          "color": { "type": "string", "example": "white" },
+          "brand": { "type": "string", "maxLength": 80, "example": "Converse" },
+          "season": { "$ref": "#/components/schemas/Season" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1, "maxLength": 24 },
+            "maxItems": 20
+          },
+          "imageUrl": { "type": "string", "format": "uri", "nullable": true },
+          "isArchived": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "WardrobeItemCreateRequest": {
+        "type": "object",
+        "required": ["name", "category"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "category": { "$ref": "#/components/schemas/ItemCategory" },
+          "color": { "type": "string" },
+          "brand": { "type": "string", "maxLength": 80 },
+          "season": { "$ref": "#/components/schemas/Season" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1, "maxLength": 24 },
+            "maxItems": 20
+          },
+          "imageUrl": { "type": "string", "format": "uri", "nullable": true }
+        }
+      },
+      "WardrobeItemUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "category": { "$ref": "#/components/schemas/ItemCategory" },
+          "color": { "type": "string" },
+          "brand": { "type": "string", "maxLength": 80 },
+          "season": { "$ref": "#/components/schemas/Season" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1, "maxLength": 24 },
+            "maxItems": 20
+          },
+          "imageUrl": { "type": "string", "format": "uri", "nullable": true },
+          "isArchived": { "type": "boolean" }
+        }
+      },
+      "PaginatedWardrobeItems": {
+        "type": "object",
+        "required": ["items", "limit"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/WardrobeItem" } },
+          "limit": { "type": "integer", "example": 20 },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "Cursor to request the next page (or null if no more results)."
+          }
+        }
+      },
+      "Outfit": {
+        "type": "object",
+        "required": ["id", "name", "itemIds", "isArchived", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string", "example": "oft_123" },
+          "name": { "type": "string", "minLength": 1, "maxLength": 80, "example": "Workday Casual" },
+          "occasion": { "$ref": "#/components/schemas/Occasion" },
+          "itemIds": { "type": "array", "minItems": 2, "items": { "type": "string" } },
+          "isArchived": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "OutfitCreateRequest": {
+        "type": "object",
+        "required": ["name", "itemIds"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "occasion": { "$ref": "#/components/schemas/Occasion" },
+          "itemIds": { "type": "array", "minItems": 2, "items": { "type": "string" } }
+        }
+      },
+      "OutfitUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "occasion": { "$ref": "#/components/schemas/Occasion" },
+          "itemIds": { "type": "array", "minItems": 2, "items": { "type": "string" } },
+          "isArchived": { "type": "boolean" }
+        }
+      },
+      "PaginatedOutfits": {
+        "type": "object",
+        "required": ["outfits", "limit"],
+        "properties": {
+          "outfits": { "type": "array", "items": { "$ref": "#/components/schemas/Outfit" } },
+          "limit": { "type": "integer", "example": 20 },
+          "nextCursor": { "type": "string", "nullable": true }
+        }
+      },
+      "PlanSlot": { "type": "string", "enum": ["day", "am", "pm", "evening"] },
+      "PlanEntry": {
+        "type": "object",
+        "required": ["id", "date", "slot", "outfitId"],
+        "properties": {
+          "id": { "type": "string", "example": "pln_123" },
+          "date": { "type": "string", "format": "date" },
+          "slot": { "$ref": "#/components/schemas/PlanSlot" },
+          "outfitId": { "type": "string" },
+          "notes": { "type": "string", "maxLength": 280 }
+        }
+      },
+      "PlanUpsertRequest": {
+        "type": "object",
+        "required": ["date", "slot", "outfitId"],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "slot": { "$ref": "#/components/schemas/PlanSlot" },
+          "outfitId": { "type": "string" },
+          "notes": { "type": "string", "maxLength": 280 }
+        }
+      },
+      "PaginatedPlanEntries": {
+        "type": "object",
+        "required": ["plans", "limit"],
+        "properties": {
+          "plans": { "type": "array", "items": { "$ref": "#/components/schemas/PlanEntry" } },
+          "limit": { "type": "integer", "example": 50 },
+          "nextCursor": { "type": "string", "nullable": true }
+        }
+      },
+      "WearEntry": {
+        "type": "object",
+        "required": ["id", "outfitId", "wornAt"],
+        "properties": {
+          "id": { "type": "string", "example": "wrn_123" },
+          "outfitId": { "type": "string" },
+          "wornAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "WearCreateRequest": {
+        "type": "object",
+        "required": ["outfitId"],
+        "properties": {
+          "outfitId": { "type": "string" },
+          "wornAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "If omitted/null, server uses current time."
+          }
+        }
+      }
+    }
+  }
+}
