@@ -36,14 +36,3 @@
 - Prints top 3 error messages sorted by descending frequency.
 - Runs successfully on a sample log with at least 100 lines.
 
-## Task 4 - Frontend Form Validation
-**Estimated Time**: 15–25 minutes  
-**Requirements**: Build a signup form with fields `name`, `email`, `password`; validate on client side and keep submit disabled until valid.  
-**Inputs**: User-entered form values with rules: name min 2 chars, valid email format, password min 8 chars and at least 1 number.  
-**Outputs**: Inline validation messages, submit-button enabled state when valid, and submitted structured payload.  
-**Acceptance Criteria**:
-- Shows validation feedback on blur or submit.
-- Prevents submit when any field is invalid.
-- Clears error message when a field becomes valid.
-- Enables submit button only when all fields are valid.
-- Produces structured payload with all three fields on submit.
