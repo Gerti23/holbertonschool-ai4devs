@@ -1,0 +1,41 @@
+version: 1
+
+languages:
+  python:
+    style_guide: "black"
+    type_hints: true
+    max_function_lines: 40
+    docstring_style: "google"
+  javascript:
+    style_guide: "airbnb"
+    semicolons: true
+    prefer_const: true
+    trailing_commas: "es5"
+  markdown:
+    heading_style: "atx"
+    line_length: 100
+    require_sections:
+      - "Requirements"
+      - "Inputs"
+      - "Outputs"
+      - "Acceptance Criteria"
+
+workflows:
+  code_review:
+    enabled: true
+    focus_areas:
+      - "security"
+      - "performance"
+      - "readability"
+      - "edge_cases"
+    output_format: "checklist"
+  doc_generator:
+    enabled: true
+    templates:
+      - "task_spec"
+      - "setup_notes"
+      - "workflow_baseline"
+    required_fields:
+      - "objective"
+      - "instructions"
+      - "expected_outcome"
