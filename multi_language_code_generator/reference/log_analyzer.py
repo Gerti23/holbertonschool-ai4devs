@@ -4,7 +4,7 @@ from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from math import ceil
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
 VALID_SEVERITIES = {"INFO", "WARN", "ERROR"}
@@ -68,7 +68,7 @@ def _nearest_rank_p95(latencies: List[int]) -> int:
 
 
 class SlidingWindowLogAnalyzer:
-    def analyze(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_payload(self, payload: Dict[str, Any]) -> Tuple[int, int, int, List[Any]]:
         window_seconds = payload.get("window_seconds")
         step_seconds = payload.get("step_seconds")
         top_k = payload.get("top_k")
@@ -83,26 +83,56 @@ class SlidingWindowLogAnalyzer:
         if not isinstance(raw_events, list):
             raise ValueError("events must be a list")
 
+        return window_seconds, step_seconds, top_k, raw_events
+
+    def parse_event(self, raw_event: Any) -> Optional[LogEvent]:
+        return _validate_event(raw_event)
+
+    def parse_events(self, raw_events: List[Any]) -> Tuple[List[LogEvent], int]:
         valid_events: List[LogEvent] = []
         skipped_events = 0
 
         for item in raw_events:
-            event = _validate_event(item)
+            event = self.parse_event(item)
             if event is None:
                 skipped_events += 1
                 continue
             valid_events.append(event)
 
-        if not valid_events:
-            return {
-                "window_seconds": window_seconds,
-                "step_seconds": step_seconds,
-                "top_k": top_k,
-                "skipped_events": skipped_events,
-                "windows": [],
-            }
-
         valid_events.sort(key=lambda event: event.timestamp)
+        return valid_events, skipped_events
+
+    def compute_window_metrics(self, events_in_window: List[LogEvent], top_k: int) -> Dict[str, Any]:
+        total_events = len(events_in_window)
+        error_events = sum(1 for event in events_in_window if event.severity == "ERROR")
+        error_rate = round((error_events / total_events), 4) if total_events else 0.0
+        latencies = [event.latency_ms for event in events_in_window]
+        p95_latency_ms = _nearest_rank_p95(latencies) if latencies else 0
+
+        endpoint_counts = Counter(event.endpoint for event in events_in_window)
+        ranked_endpoints = sorted(endpoint_counts.items(), key=lambda pair: (-pair[1], pair[0]))
+        top_endpoints = [
+            {"endpoint": endpoint, "count": count}
+            for endpoint, count in ranked_endpoints[:top_k]
+        ]
+
+        return {
+            "total_events": total_events,
+            "error_events": error_events,
+            "error_rate": error_rate,
+            "p95_latency_ms": p95_latency_ms,
+            "top_endpoints": top_endpoints,
+        }
+
+    def generate_windows(
+        self,
+        valid_events: List[LogEvent],
+        window_seconds: int,
+        step_seconds: int,
+        top_k: int,
+    ) -> List[Dict[str, Any]]:
+        if not valid_events:
+            return []
 
         window_size = timedelta(seconds=window_seconds)
         step_size = timedelta(seconds=step_seconds)
@@ -116,33 +146,32 @@ class SlidingWindowLogAnalyzer:
         while start <= max_ts:
             end = start + window_size
             in_window = [event for event in valid_events if start <= event.timestamp < end]
-
-            total_events = len(in_window)
-            error_events = sum(1 for event in in_window if event.severity == "ERROR")
-            error_rate = round((error_events / total_events), 4) if total_events else 0.0
-            latencies = [event.latency_ms for event in in_window]
-            p95_latency_ms = _nearest_rank_p95(latencies) if latencies else 0
-
-            endpoint_counts = Counter(event.endpoint for event in in_window)
-            ranked_endpoints = sorted(endpoint_counts.items(), key=lambda pair: (-pair[1], pair[0]))
-            top_endpoints = [
-                {"endpoint": endpoint, "count": count}
-                for endpoint, count in ranked_endpoints[:top_k]
-            ]
-
+            metrics = self.compute_window_metrics(in_window, top_k)
             windows.append(
                 {
                     "start": _format_utc_timestamp(start),
                     "end": _format_utc_timestamp(end),
-                    "total_events": total_events,
-                    "error_events": error_events,
-                    "error_rate": error_rate,
-                    "p95_latency_ms": p95_latency_ms,
-                    "top_endpoints": top_endpoints,
+                    **metrics,
                 }
             )
-
             start += step_size
+
+        return windows
+
+    def analyze(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        window_seconds, step_seconds, top_k, raw_events = self.validate_payload(payload)
+        valid_events, skipped_events = self.parse_events(raw_events)
+
+        if not valid_events:
+            return {
+                "window_seconds": window_seconds,
+                "step_seconds": step_seconds,
+                "top_k": top_k,
+                "skipped_events": skipped_events,
+                "windows": [],
+            }
+
+        windows = self.generate_windows(valid_events, window_seconds, step_seconds, top_k)
 
         return {
             "window_seconds": window_seconds,
