@@ -2,17 +2,19 @@
 
 | Risk | Severity | Notes |
 |---|---|---|
-| Off-by-one and boundary logic defects | High | Seen in list slicing logic; can silently return incorrect business data without obvious failures. |
-| Infinite loop risk in iterative search logic | High | Missing index progression in non-match paths can hang execution and block batch jobs/services. |
-| Null handling gaps (runtime exceptions) | High | Null values in collections can trigger runtime crashes (e.g., `NullPointerException`) and interrupt workflows. |
-| Async contract misuse in JavaScript | High | Incorrect async/await usage can break execution flow and create hard-to-debug integration failures. |
-| Type confusion between strings and numbers | Medium | String concatenation used where numeric addition is expected leads to incorrect totals and data integrity issues. |
-| Limited automated test coverage for edge cases | High | Regressions are likely because boundary, null, and non-happy-path scenarios are not systematically protected. |
-| Multi-language inconsistency in coding patterns | Medium | Different idioms across Python/JS/Java increase maintenance overhead and onboarding complexity. |
-| No centralized dependency manifest in module scope | Low | Harder to audit runtime/tooling assumptions and security posture for this directory in isolation. |
+| Infinite loop in pair-search logic | High | In `bug6.py`, missing index increment in the non-match path can cause non-terminating execution, freezing scripts/services and consuming compute indefinitely. |
+| Runtime crash from null dereference | High | In `bug3.java`, calling `length()` on nullable strings can throw `NullPointerException`, causing abrupt failure in production paths that process partially missing data. |
+| Boundary/off-by-one errors in slicing | High | In `bug1.py`, index math can return extra or wrong elements, which silently corrupts downstream calculations and user-facing outputs. |
+| Async contract misuse | High | In `bug5.js`, incorrect async/await usage can break control flow (syntax/runtime failure), leading to failed API-driven features and incomplete responses. |
+| Insufficient automated tests for edge cases | High | Current validation is mostly manual and scenario-limited; regressions in null/boundary/non-match paths are likely to reappear without systematic tests. |
+| Type confusion in numeric aggregation | Medium | In `bug4.py`, string concatenation can replace arithmetic (`"10" + "5" -> "105"`), producing financially or analytically incorrect totals without immediate exceptions. |
+| Faulty deduplication algorithm correctness | Medium | In `bug2.js`, reversed membership logic can produce missing/duplicate results, reducing trust in data transformations and reporting accuracy. |
+| Inconsistent coding patterns across languages | Low | Different idioms and error-handling styles across Python/JS/Java raise maintenance cost and increase onboarding/debugging time. |
 
-## Priority Notes
+## Prioritized Action Plan
 
-1. Address **High** risks first: loop safety, null safety, async correctness, and boundary checks.
-2. Add targeted unit tests around known failure modes before broad refactors.
-3. Standardize implementation patterns (guard clauses, explicit contracts, safe iteration templates).
+1. **P0 (Immediate, High):** Fix loop progression and null-safety defects (`bug6`, `bug3`) to prevent hangs and hard crashes.
+2. **P0 (Immediate, High):** Enforce async contract correctness and boundary-safe slicing (`bug5`, `bug1`) to stop execution failures and silent data corruption.
+3. **P1 (Near-term, High):** Add automated tests for edge scenarios (nulls, empty inputs, non-match loops, boundary values) before additional refactors.
+4. **P1 (Near-term, Medium):** Correct type-handling and dedupe logic (`bug4`, `bug2`) and add regression tests for numeric/data integrity.
+5. **P2 (Planned, Low):** Standardize coding conventions and error-handling patterns across languages to reduce future defect rates.
