@@ -22,3 +22,11 @@
 - The feature is solid and test coverage is good, but the API would benefit from explicit input validation and docstrings for the main public types (`ReviewComment`, `TriageConfig`, `triage_comments()`). Clearer API contracts would make the module easier to reuse and safer for external inputs.
 - Consider adding tests for invalid severities, malformed `line` values, and `top_k=0` to lock down edge-case behavior and prevent regressions. These edge cases are where triage systems often fail in practice, so covering them will make the feature more robust.
 - If this module is intended for larger review volumes, a future iteration could return severity ranks directly in `TriageItem` to avoid repeated ranking work during sort and reporting. That change would improve performance and also simplify the comparator logic.
+- Overall, the module would be easier to extend if the configuration, validation, ranking, and reporting concerns were separated into smaller helpers or strategy objects. That would reduce the amount of logic concentrated inside `triage_comments()` and make each behavior easier to test independently.
+- Add a brief top-level module docstring that explains the intended review workflow and expected input contract. This would give future contributors a single place to understand how security, performance, and maintainability concerns interact in the triage pipeline.
+- Include a small integration-style test that exercises the full pipeline with mixed severities, invalid records, and path filters. That would provide a unified check that the public API behaves consistently across the three review personas.
+
+## Persona-Oriented Summary
+- **Security**: The pipeline should reject or isolate malformed records without crashing the full report generation flow.
+- **Performance**: Severity ranking and path matching should avoid repeating work across filtering, sorting, and aggregation.
+- **Maintainability**: Scoring, deduplication, and validation rules should be named, documented, and split into smaller units where practical.
